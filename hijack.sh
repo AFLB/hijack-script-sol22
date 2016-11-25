@@ -29,6 +29,8 @@
 #
 # collect informations.
 #
+# put this file to /system/hijack/hijack.sh
+#
 ###
 
 # put on the led lights
