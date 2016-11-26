@@ -1,0 +1,17 @@
+rootfs / rootfs rw,relatime 0 0
+tmpfs /dev tmpfs rw,nosuid,relatime,mode=755 0 0
+devpts /dev/pts devpts rw,relatime,mode=600 0 0
+proc /proc proc rw,relatime 0 0
+sysfs /sys sysfs rw,relatime 0 0
+/sys/kernel/debug /sys/kernel/debug debugfs rw,relatime 0 0
+none /acct cgroup rw,relatime,cpuacct 0 0
+tmpfs /mnt/secure tmpfs rw,relatime,mode=700 0 0
+tmpfs /mnt/asec tmpfs rw,relatime,mode=755,gid=1000 0 0
+tmpfs /mnt/obb tmpfs rw,relatime,mode=755,gid=1000 0 0
+none /dev/cpuctl cgroup rw,relatime,cpu 0 0
+tmpfs /dtvtmp/dtv tmpfs rw,nosuid,nodev,relatime,size=400k 0 0
+/dev/block/platform/msm_sdcc.1/by-name/system /system ext4 rw,relatime,data=ordered 0 0
+/dev/block/platform/msm_sdcc.1/by-name/userdata /data ext4 rw,nosuid,nodev,relatime,discard,noauto_da_alloc,data=ordered 0 0
+/dev/block/platform/msm_sdcc.1/by-name/apps_log /mnt/idd ext4 rw,nosuid,nodev,noexec,noatime,discard,nobarrier,data=ordered 0 0
+/dev/block/platform/msm_sdcc.1/by-name/cache /cache ext4 rw,nosuid,nodev,noatime,discard,data=ordered 0 0
+tmpfs /mnt/qcks tmpfs rw,relatime,mode=770,uid=1000,gid=1000 0 0
