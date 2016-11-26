@@ -208,12 +208,6 @@ MAIN () {
 
 	# clean-up
 	UNSET
-
-	# FOREST GREEN
-	LED 34 139 34
-	sleep 1
-
-	LED
 }
 
 MAIN
