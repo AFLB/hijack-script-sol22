@@ -52,23 +52,78 @@ LED () {
 # prepare, remount / and create folders
 PREPARE () {
 	mount -o remount,rw rootfs /
-	mkdir /temp/
-	mkdir /temp/bin/
+	mkdir -p /temp/
+	mkdir -p /temp/bin/
+	mkdir -p /temp/event/
 }
 
 # check mountpoint / process
 CHECKENV () {
-	mkdir /temp/log
+	mkdir -p /temp/log
 	mount > /temp/log/post_mount.txt
 	ps aux > /temp/log/post_ps_aux.txt
 	ls -laR > /temp/log/post_ls_laR.txt
 	getprop > /temp/log/post_getprop.txt
-	
+	dmesg > /temp/log/post_dmesg.txt
 }
 
 # send message
 KMSG () {
 	echo $1 > /dev/kmsg
+}
+
+# unmount
+UNMOUNT () {
+	mount -o rw,remount /system
+	mkdir -p /system/hijack/logs
+	cp /temp/log /system/hijack/logs/post_log
+	mkdir -p /system/hijack/logs/unmount_log
+
+	# none
+	umount -l /acct
+	umount -l /dev/cpuctl
+
+	# debugfs
+	umount -l /sys/kernel/debug
+
+	# devptfs
+	umount -l /dev/pts
+
+	# pertitions
+	### umount -l /dev/block/platform/msm_sdcc.1/by-name/system
+	umount -l /dev/block/platform/msm_sdcc.1/by-name/userdata
+	umount -l /dev/block/platform/msm_sdcc.1/by-name/apps_log
+	umount -l /dev/block/platform/msm_sdcc.1/by-name/cache
+
+	# proc
+	umount -l /proc
+
+	# sysfs
+	umount -l /sys
+
+	# tmpfs
+	### umount -l /dev
+	umount -l /mnt/secure
+	umount -l /mnt/asec
+	umount -l /mnt/obb
+	umount -l /dev/cpuctl
+	umount -l /dtvtmp/dtv
+	umount -l /mnt/idd
+	umount -l /mnt/qcks
+
+	# write changes
+	sync
+
+	# WRITE LOGS (testing)
+	mount > /system/hijack/logs/unmount_log/unmount_mount.txt
+	ps aux > /system/hijack/logs/unmount_log/unmount_ps_aux.txt
+	ls -laR > /system/hijack/logs/unmount_log/unmount_ls_laR.txt
+	getprop > /system/hijack/logs/unmount_log/unmount_getprop.txt
+	dmesg > /system/hijack/logs/unmount_log/unmount_dmesg.txt
+
+	# unmount system (test)
+	### umount -l /dev
+	umount -l /dev/block/platform/msm_sdcc.1/by-name/system
 }
 
 # unset
@@ -78,6 +133,49 @@ UNSET () {
 	unset CHECKENV
 	unset KMSG
 	unset MAIN
+	unset UNMOUNT
+	unset SWITCH
+}
+
+# get switch
+SWITCH () {
+	# blue
+	LED 51 102 255
+
+	# declaration
+	local eventdev
+	local suffix
+	local catproc
+
+	# get event
+	for eventdev in $(ls /dev/input/event*)
+	do
+		suffix="$(expr ${eventdev} : '/dev/input/event\(.*\)')"
+		cat ${eventdev} > /temp/event/key${suffix} &
+	done
+	sleep 3
+
+	# kill cat (4 rows up)
+	for catproc in $(ps | grep " cat" | grep -v grep | awk '{print $1;}')
+	do
+		kill -9 ${catproc}
+	done
+	sleep 3
+
+	# tell end of cat events to users / off led
+	LED
+
+	# check keys event
+	hexdump /temp/event/key* | grep -e '^.* 0001 0073 .... ....$' > /temp/event/keycheck_up
+	hexdump /temp/event/key* | grep -e '^.* 0001 0072 .... ....$' > /temp/event/keycheck_down
+	sleep 1
+
+	# [VOL -]: call unmount.
+	if [ -s /temp/event/keycheck_down ]; then
+		KMSG "[hijack] testing unmount..."
+		UNMOUNT
+		reboot
+	fi
 }
 
 # main
@@ -87,8 +185,8 @@ MAIN () {
 	# you can see LED easier.
 	sleep 1
 
-	# GREEN
-	LED 85 107 47
+	# ORANGE
+	LED 255 69 0
 
 	KMSG "[hijack] prepareing..."
 	PREPARE
@@ -96,11 +194,15 @@ MAIN () {
 	KMSG "[hijack] collect informations..."
 	CHECKENV
 
+	# GET SWITCH
+	SWITCH
+
+	UNSET
+
 	# FOREST GREEN
 	LED 34 139 34
+	sleep 1
 
-	KMSG "[hijack] cleaning up..."
-	UNSET
 	LED
 }
 
