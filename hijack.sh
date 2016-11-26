@@ -135,6 +135,17 @@ UNSET () {
 	unset MAIN
 	unset UNMOUNT
 	unset SWITCH
+	unset VIBRAT
+}
+
+# VIBRAT
+VIBRAT () {
+	local viberator="/sys/class/timed_output/vibrator/enable"
+	if [ "$1" = "" ]; then
+		echo 50 > $viberator
+	else
+		echo $1 > $viberator
+	fi
 }
 
 # get switch
@@ -172,6 +183,7 @@ SWITCH () {
 
 	# [VOL -]: call unmount.
 	if [ -s /temp/event/keycheck_down ]; then
+		VIBRAT
 		KMSG "[hijack] testing unmount..."
 		UNMOUNT
 		reboot
