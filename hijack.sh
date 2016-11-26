@@ -142,7 +142,7 @@ UNSET () {
 VIBRAT () {
 	local viberator="/sys/class/timed_output/vibrator/enable"
 	if [ "$1" = "" ]; then
-		echo 50 > $viberator
+		echo 100 > $viberator
 	else
 		echo $1 > $viberator
 	fi
