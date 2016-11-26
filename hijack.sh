@@ -150,13 +150,13 @@ VIBRAT () {
 
 # get switch
 SWITCH () {
-	# blue
-	LED 51 102 255
-
 	# declaration
 	local eventdev
 	local suffix
 	local catproc
+
+	# blue
+	LED 51 102 255
 
 	# get event
 	for eventdev in $(ls /dev/input/event*)
@@ -164,14 +164,14 @@ SWITCH () {
 		suffix="$(expr ${eventdev} : '/dev/input/event\(.*\)')"
 		cat ${eventdev} > /temp/event/key${suffix} &
 	done
-	sleep 3
+	sleep 2
 
 	# kill cat (4 rows up)
 	for catproc in $(ps | grep " cat" | grep -v grep | awk '{print $1;}')
 	do
 		kill -9 ${catproc}
 	done
-	sleep 3
+	sleep 1
 
 	# tell end of cat events to users / off led
 	LED
@@ -181,8 +181,10 @@ SWITCH () {
 	hexdump /temp/event/key* | grep -e '^.* 0001 0072 .... ....$' > /temp/event/keycheck_down
 	sleep 1
 
-	# [VOL -]: call unmount.
+	# VOL -
 	if [ -s /temp/event/keycheck_down ]; then
+		# AQUAMARINE
+		LED 127 255 212
 		VIBRAT
 		KMSG "[hijack] testing unmount..."
 		UNMOUNT
@@ -192,11 +194,6 @@ SWITCH () {
 
 # main
 MAIN () {
-	# AQUAMARINE
-	LED 127 255 212
-	# you can see LED easier.
-	sleep 1
-
 	# ORANGE
 	LED 255 69 0
 
@@ -206,9 +203,10 @@ MAIN () {
 	KMSG "[hijack] collect informations..."
 	CHECKENV
 
-	# GET SWITCH
+	# switch
 	SWITCH
 
+	# clean-up
 	UNSET
 
 	# FOREST GREEN
