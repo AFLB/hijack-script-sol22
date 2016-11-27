@@ -79,7 +79,7 @@ KMSG () {
 UNMOUNT () {
 	mount -o rw,remount /system
 	mkdir -p /system/hijack/logs
-	cp /temp/log /system/hijack/logs/post_log
+	cp -r /temp/log /system/hijack/logs/post_log
 	mkdir -p /system/hijack/logs/unmount_log
 
 	# none
