@@ -158,6 +158,9 @@ SWITCH () {
 	# blue
 	LED 51 102 255
 
+	# vibration
+	VIBRAT
+
 	# get event
 	for eventdev in $(ls /dev/input/event*)
 	do
@@ -185,7 +188,6 @@ SWITCH () {
 	if [ -s /temp/event/keycheck_down ]; then
 		# AQUAMARINE
 		LED 127 255 212
-		VIBRAT
 		KMSG "[hijack] testing unmount..."
 		UNMOUNT
 		reboot
