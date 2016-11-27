@@ -93,6 +93,7 @@ UNMOUNT () {
 	umount -l /dev/pts
 
 	# pertitions
+	### temp commented out for writing logs
 	### umount -l /dev/block/platform/msm_sdcc.1/by-name/system
 	umount -l /dev/block/platform/msm_sdcc.1/by-name/userdata
 	umount -l /dev/block/platform/msm_sdcc.1/by-name/apps_log
@@ -105,7 +106,7 @@ UNMOUNT () {
 	umount -l /sys
 
 	# tmpfs
-	### umount -l /dev
+	umount -l /dev
 	umount -l /mnt/secure
 	umount -l /mnt/asec
 	umount -l /mnt/obb
@@ -116,18 +117,13 @@ UNMOUNT () {
 
 	# write changes
 	sync
-	sleep 3
 
-	# WRITE LOGS (testing)
+	# WRITE LOGS (to system)
 	mount > /system/hijack/logs/unmount_log/unmount_mount.txt
 	ps aux > /system/hijack/logs/unmount_log/unmount_ps_aux.txt
 	ls -laR > /system/hijack/logs/unmount_log/unmount_ls_laR.txt
 	getprop > /system/hijack/logs/unmount_log/unmount_getprop.txt
 	dmesg > /system/hijack/logs/unmount_log/unmount_dmesg.txt
-
-	# unmount system (test)
-	### umount -l /dev
-	umount -l /dev/block/platform/msm_sdcc.1/by-name/system
 }
 
 # unset
