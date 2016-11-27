@@ -106,7 +106,6 @@ UNMOUNT () {
 	umount -l /sys
 
 	# tmpfs
-	umount -l /dev
 	umount -l /mnt/secure
 	umount -l /mnt/asec
 	umount -l /mnt/obb
@@ -114,6 +113,8 @@ UNMOUNT () {
 	umount -l /dtvtmp/dtv
 	umount -l /mnt/idd
 	umount -l /mnt/qcks
+	### temp commented out for not unmounted system
+	### umount -l /dev
 
 	# write changes
 	sync
