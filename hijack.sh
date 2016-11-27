@@ -99,12 +99,6 @@ UNMOUNT () {
 	umount -l /dev/block/platform/msm_sdcc.1/by-name/apps_log
 	umount -l /dev/block/platform/msm_sdcc.1/by-name/cache
 
-	# procfs
-	### umount -l /proc
-
-	# sysfs
-	### umount -l /sys
-
 	# tmpfs
 	umount -l /mnt/secure
 	umount -l /mnt/asec
@@ -113,8 +107,6 @@ UNMOUNT () {
 	umount -l /dtvtmp/dtv
 	umount -l /mnt/idd
 	umount -l /mnt/qcks
-	### temp commented out for not unmounted system
-	### umount -l /dev
 
 	# write changes
 	sync
