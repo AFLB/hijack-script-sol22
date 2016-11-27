@@ -155,8 +155,8 @@ SWITCH () {
 	local suffix
 	local catproc
 
-	# blue
-	LED 51 102 255
+	# AQUAMARINE
+	LED 127 255 212
 
 	# vibration
 	VIBRAT
@@ -186,8 +186,8 @@ SWITCH () {
 
 	# VOL -
 	if [ -s /temp/event/keycheck_down ]; then
-		# AQUAMARINE
-		LED 127 255 212
+		# SALMON
+		LED 250 128 114
 		KMSG "[hijack] testing unmount..."
 		UNMOUNT
 		reboot
