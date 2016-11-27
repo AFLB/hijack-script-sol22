@@ -98,6 +98,13 @@ UNMOUNT () {
 	umount -l /mnt/idd
 	umount -l /mnt/qcks
 
+	# emulate
+	umount -l /mnt/shell/emulated
+	umount -l /storage/emulated/legacy
+
+	# external SD card
+	umount -l /storage/removable/sdcard1
+
 	# write changes
 	sync
 }
