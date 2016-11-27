@@ -36,7 +36,7 @@ PATH="/temp/bin:$PATH"
 # unmount testing.
 # hijack recovery.
 #
-# [ VOL - ]: unmount tester
+
 # [ VOL + ]: hijack recovery
 #
 # put this file to /system/hijack/hijack.sh
@@ -62,20 +62,8 @@ LED () {
 # prepare, remount / and create folders
 PREPARE () {
 	mount -o remount,rw rootfs /
+	cd /
 	mkdir -p /temp/event/
-}
-
-# check mountpoint / process
-CHECKENV () {
-	# ORANGE
-	LED 255 69 0
-
-	mkdir -p /temp/log
-	mount > /temp/log/post_mount.txt
-	ps aux > /temp/log/post_ps_aux.txt
-	ls -laR > /temp/log/post_ls_laR.txt
-	getprop > /temp/log/post_getprop.txt
-	dmesg > /temp/log/post_dmesg.txt
 }
 
 # send message
@@ -85,16 +73,6 @@ KMSG () {
 
 # unmount
 UNMOUNT () {
-	if [ "$1" = "test" ]; then
-		# SALMON
-		LED 250 128 114
-
-		mount -o rw,remount /system
-		mkdir -p /system/hijack/logs
-		cp -r /temp/log /system/hijack/logs/post_log
-		mkdir -p /system/hijack/logs/unmount_log
-	fi
-
 	# none
 	umount -l /acct
 	umount -l /dev/cpuctl
@@ -106,13 +84,7 @@ UNMOUNT () {
 	umount -l /dev/pts
 
 	# pertitions
-	if [ "$1" = "test" ]; then
-		### temp commented out for writing logs
-		### umount -l /dev/block/platform/msm_sdcc.1/by-name/system
-		:
-	else
-		umount -l /dev/block/platform/msm_sdcc.1/by-name/system
-	fi
+	umount -l /dev/block/platform/msm_sdcc.1/by-name/system
 	umount -l /dev/block/platform/msm_sdcc.1/by-name/userdata
 	umount -l /dev/block/platform/msm_sdcc.1/by-name/apps_log
 	umount -l /dev/block/platform/msm_sdcc.1/by-name/cache
@@ -128,15 +100,6 @@ UNMOUNT () {
 
 	# write changes
 	sync
-
-	if [ "$1" = "test" ]; then
-		# WRITE LOGS (to system)
-		mount > /system/hijack/logs/unmount_log/unmount_mount.txt
-		ps aux > /system/hijack/logs/unmount_log/unmount_ps_aux.txt
-		ls -laR > /system/hijack/logs/unmount_log/unmount_ls_laR.txt
-		getprop > /system/hijack/logs/unmount_log/unmount_getprop.txt
-		dmesg > /system/hijack/logs/unmount_log/unmount_dmesg.txt
-	fi
 }
 
 # process killer
@@ -168,7 +131,8 @@ KILLER () {
 	done
 
 	# kill locking pidfile
-	for lockingpid in `lsof | awk '{print $1" "$2}' | grep "/bin\|/system\|/data\|/cache" | awk '{print $1}'`; do
+	for lockingpid in `lsof | awk '{print $1" "$2}' | grep "/bin\|/system\|/data\|/cache" | awk '{print $1}'`
+	do
 		binary=$(cat /proc/${lockingpid}/status | grep -i "name" | awk -F':\t' '{print $2}')
 		if [ "$binary" != "" ]; then
 			killall $binary
@@ -192,7 +156,6 @@ VIBRAT () {
 UNSET () {
 	unset LED
 	unset PREPARE
-	unset CHECKENV
 	unset KMSG
 	unset MAIN
 	unset UNMOUNT
@@ -264,14 +227,6 @@ SWITCH () {
 	# check keys event
 	hexdump /temp/event/key* | grep -e '^.* 0001 0073 .... ....$' > /temp/event/keycheck_up
 	hexdump /temp/event/key* | grep -e '^.* 0001 0072 .... ....$' > /temp/event/keycheck_down
-	sleep 1
-
-	# VOL -
-	if [ -s /temp/event/keycheck_down ]; then
-		KMSG "[hijack] testing unmount..."
-		UNMOUNT test
-		reboot
-	fi
 
 	# VOL +
 	if [ -s /temp/event/keycheck_up ]; then
