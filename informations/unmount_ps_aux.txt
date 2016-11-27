@@ -1,1 +1,1 @@
-USER     PID   PPID  VSIZE  RSS     WCHAN    PC         NAME
+PID   USER     TIME   COMMAND
