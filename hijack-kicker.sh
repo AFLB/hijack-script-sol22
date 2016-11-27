@@ -48,7 +48,7 @@
 #
 ###
 
-PREPARE () {
+PREPARE_HIJACK () {
     ###
     # prepare
     ###
