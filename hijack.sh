@@ -33,6 +33,9 @@ PATH="/temp/bin:$PATH"
 ###
 #
 # collect informations.
+# unmount testing.
+#
+# [ VOL - ]: unmount tester
 #
 # put this file to /system/hijack/hijack.sh
 #
