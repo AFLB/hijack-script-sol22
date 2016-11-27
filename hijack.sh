@@ -141,17 +141,19 @@ UNMOUNT () {
 
 # process killer
 KILLER () {
-	local svcname
+	local runningsvc
+	local runningsvcname
 	local runningprc
 	local lockingpid
 	local binary
 
 	# kill services
-	for svcname in $(getprop | grep -E '^\[init\.svc\..*\]: \[running\]' | sed 's/\[init\.svc\.\(.*\)\]:.*/\1/g;')
+	for runningsvc in $(getprop | grep -E '^\[init\.svc\..*\]: \[running\]' | grep -v ueventd)
 	do
-		stop $svcname
-		if [ -f "/system/bin/${svcname}" ]; then
-			pkill -f /system/bin/${svcname}
+		runningsvcname=$(expr ${runningsvc} : '\[init\.svc\.\(.*\)\]:.*')
+		stop $runningsvcname
+		if [ -f "/system/bin/${runningsvcname}" ]; then
+			pkill -f /system/bin/${runningsvcname}
 		fi
 	done
 
