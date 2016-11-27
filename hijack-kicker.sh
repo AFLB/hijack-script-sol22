@@ -56,6 +56,7 @@ PREPARE_HIJACK () {
     mkdir -p /temp
     mkdir -p /temp/bin
     mkdir -p /temp/script
+    mkdir -p /temp/ramdisk
 
     ###
     # copy busybox
@@ -77,6 +78,11 @@ PREPARE_HIJACK () {
     ###
     cp /system/hijack/hijack.sh /temp/script/
     chmod 755 /temp/script/*.sh
+
+    ###
+    # copy ramdisk images
+    ###
+    cp /system/hijack/ramdisk-recovery.img /temp/ramdisk/
 
     ###
     # kick hijack script

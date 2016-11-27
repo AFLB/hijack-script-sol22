@@ -34,8 +34,10 @@ PATH="/temp/bin:$PATH"
 #
 # collect informations.
 # unmount testing.
+# hijack recovery.
 #
 # [ VOL - ]: unmount tester
+# [ VOL + ]: hijack recovery
 #
 # put this file to /system/hijack/hijack.sh
 #
@@ -80,10 +82,12 @@ KMSG () {
 
 # unmount
 UNMOUNT () {
-	mount -o rw,remount /system
-	mkdir -p /system/hijack/logs
-	cp -r /temp/log /system/hijack/logs/post_log
-	mkdir -p /system/hijack/logs/unmount_log
+	if [ "$1" = "test" ]; then
+		mount -o rw,remount /system
+		mkdir -p /system/hijack/logs
+		cp -r /temp/log /system/hijack/logs/post_log
+		mkdir -p /system/hijack/logs/unmount_log
+	fi
 
 	# none
 	umount -l /acct
@@ -96,8 +100,13 @@ UNMOUNT () {
 	umount -l /dev/pts
 
 	# pertitions
-	### temp commented out for writing logs
-	### umount -l /dev/block/platform/msm_sdcc.1/by-name/system
+	if [ "$1" = "test" ]; then
+		### temp commented out for writing logs
+		### umount -l /dev/block/platform/msm_sdcc.1/by-name/system
+		:
+	else
+		umount -l /dev/block/platform/msm_sdcc.1/by-name/system
+	fi
 	umount -l /dev/block/platform/msm_sdcc.1/by-name/userdata
 	umount -l /dev/block/platform/msm_sdcc.1/by-name/apps_log
 	umount -l /dev/block/platform/msm_sdcc.1/by-name/cache
@@ -114,12 +123,14 @@ UNMOUNT () {
 	# write changes
 	sync
 
-	# WRITE LOGS (to system)
-	mount > /system/hijack/logs/unmount_log/unmount_mount.txt
-	ps aux > /system/hijack/logs/unmount_log/unmount_ps_aux.txt
-	ls -laR > /system/hijack/logs/unmount_log/unmount_ls_laR.txt
-	getprop > /system/hijack/logs/unmount_log/unmount_getprop.txt
-	dmesg > /system/hijack/logs/unmount_log/unmount_dmesg.txt
+	if [ "$1" = "test" ]; then
+		# WRITE LOGS (to system)
+		mount > /system/hijack/logs/unmount_log/unmount_mount.txt
+		ps aux > /system/hijack/logs/unmount_log/unmount_ps_aux.txt
+		ls -laR > /system/hijack/logs/unmount_log/unmount_ls_laR.txt
+		getprop > /system/hijack/logs/unmount_log/unmount_getprop.txt
+		dmesg > /system/hijack/logs/unmount_log/unmount_dmesg.txt
+	fi
 }
 
 # unset
@@ -188,6 +199,8 @@ SWITCH () {
 		UNMOUNT
 		reboot
 	fi
+
+	# VOL +
 }
 
 # main
