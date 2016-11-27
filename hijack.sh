@@ -67,6 +67,9 @@ PREPARE () {
 
 # check mountpoint / process
 CHECKENV () {
+	# ORANGE
+	LED 255 69 0
+
 	mkdir -p /temp/log
 	mount > /temp/log/post_mount.txt
 	ps aux > /temp/log/post_ps_aux.txt
@@ -83,6 +86,9 @@ KMSG () {
 # unmount
 UNMOUNT () {
 	if [ "$1" = "test" ]; then
+		# SALMON
+		LED 250 128 114
+
 		mount -o rw,remount /system
 		mkdir -p /system/hijack/logs
 		cp -r /temp/log /system/hijack/logs/post_log
@@ -133,6 +139,16 @@ UNMOUNT () {
 	fi
 }
 
+# VIBRAT
+VIBRAT () {
+	local viberator="/sys/class/timed_output/vibrator/enable"
+	if [ "$1" = "" ]; then
+		echo 150 > $viberator
+	else
+		echo $1 > $viberator
+	fi
+}
+
 # unset
 UNSET () {
 	unset LED
@@ -143,16 +159,29 @@ UNSET () {
 	unset UNMOUNT
 	unset SWITCH
 	unset VIBRAT
+	unset RECOVERY
 }
 
-# VIBRAT
-VIBRAT () {
-	local viberator="/sys/class/timed_output/vibrator/enable"
-	if [ "$1" = "" ]; then
-		echo 150 > $viberator
-	else
-		echo $1 > $viberator
-	fi
+# recovery
+RECOVERY () {
+	# GREEN
+	LED 0 128 0
+
+	UNMOUNT
+	mkdir /recovery
+	cd /recovery
+
+	# unpack recovery ramdisk image
+	gzip -dc /temp/ramdisk/ramdisk-recovery.img | cpio -i
+
+	# write changes
+	sync
+
+	# power off LED...
+	LED
+
+	# hijack!
+	chroot /recovery /init
 }
 
 # get switch
@@ -193,21 +222,20 @@ SWITCH () {
 
 	# VOL -
 	if [ -s /temp/event/keycheck_down ]; then
-		# SALMON
-		LED 250 128 114
 		KMSG "[hijack] testing unmount..."
-		UNMOUNT
+		UNMOUNT test
 		reboot
 	fi
 
 	# VOL +
+	if [ -s /temp/event/keycheck_up ]; then
+		KMSG "[hijack] hijack to recovery..."
+		RECOVERY
+	fi
 }
 
 # main
 MAIN () {
-	# ORANGE
-	LED 255 69 0
-
 	KMSG "[hijack] prepareing..."
 	PREPARE
 
