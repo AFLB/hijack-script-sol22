@@ -83,23 +83,25 @@ UNMOUNT () {
 	# devptfs
 	umount -l /dev/pts
 
-	# pertitions
+	# partitions
 	umount -l /data
 	umount -l /system
 	umount -l /cache
+	umount -l /lta-label
 
 	# tmpfs
 	umount -l /mnt/secure
 	umount -l /mnt/asec
 	umount -l /mnt/obb
+	umount -l /mnt/qcks
 	umount -l /dev/cpuctl
 	umount -l /dtvtmp/dtv
 	umount -l /mnt/idd
 	umount -l /mnt/qcks
 
 	# emulate
-	umount -l /mnt/shell/emulated
 	umount -l /storage/emulated/legacy
+	umount -l /mnt/shell/emulated
 
 	# external SD card
 	umount -l /storage/removable/sdcard1
@@ -116,7 +118,7 @@ UNMOUNT () {
 
 # remove 
 REMOVE () {
-	rm -rf /init* /ueventd* /etc /d /ext_card /sdcard /sdcard1 /tmp /usbdisk /vendor /mnt /sbin /lta-label
+	rm -rf /init* /ueventd* /etc /d /ext_card /sdcard /sdcard1 /tmp /usbdisk /vendor
 }
 
 # process killer
