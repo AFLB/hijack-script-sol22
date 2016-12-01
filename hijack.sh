@@ -159,13 +159,11 @@ KILLER () {
 BYERIC () {
 	local ric=$(type ric | sed "s/.* //g" )
 	if [ -x $ric ]; then
-		mount -o rw,remount /system
 		echo "#!/system/bin/sh" > $ric
 		echo "while :" >> $ric
 		echo "do" >> $ric
 		echo "  sleep 3600" >> $ric
 		echo "done" >> $ric
-		mount -o ro,remount /system
 	fi
 }
 
@@ -199,7 +197,7 @@ RECOVERY () {
 	LED 0 128 0
 
 	# prepare hijack
-	BYELIC
+	BYERIC
 	KILLER
 	sleep 1
 	UNMOUNT
