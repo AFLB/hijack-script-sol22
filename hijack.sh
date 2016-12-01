@@ -105,6 +105,12 @@ UNMOUNT () {
 	# external SD card
 	umount -l /storage/removable/sdcard1
 
+	# proc
+	umount -l /proc
+
+	# sysfs
+	umount -l /sys
+
 	# write changes
 	sync
 }
