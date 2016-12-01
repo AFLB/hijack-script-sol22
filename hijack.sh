@@ -155,6 +155,20 @@ KILLER () {
 	sync
 }
 
+# goodbye ric...
+BYERIC () {
+	local ric=$(type ric | sed "s/.* //g" )
+	if [ -x $ric ]; then
+		mount -o rw,remount /system
+		echo "#!/system/bin/sh" > $ric
+		echo "while :" >> $ric
+		echo "do" >> $ric
+		echo "  sleep 3600" >> $ric
+		echo "done" >> $ric
+		mount -o ro,remount /system
+	fi
+}
+
 # VIBRAT
 VIBRAT () {
 	local viberator="/sys/class/timed_output/vibrator/enable"
@@ -176,6 +190,7 @@ UNSET () {
 	unset VIBRAT
 	unset RECOVERY
 	unset KILLER
+	unset BYERIC
 }
 
 # recovery
@@ -184,6 +199,7 @@ RECOVERY () {
 	LED 0 128 0
 
 	# prepare hijack
+	BYELIC
 	KILLER
 	sleep 1
 	UNMOUNT
