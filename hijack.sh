@@ -98,6 +98,7 @@ UNMOUNT () {
 	umount -l /dtvtmp/dtv
 	umount -l /mnt/idd
 	umount -l /mnt/qcks
+	umount -l /dev
 
 	# emulate
 	umount -l /storage/emulated/legacy
