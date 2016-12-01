@@ -116,7 +116,7 @@ UNMOUNT () {
 
 # remove 
 REMOVE () {
-	rm -r /init* /ueventd* /etc /d /ext_card /sdcard /sdcard1 /tmp /usbdisk /vendor /mnt
+	rm -rf /init* /ueventd* /etc /d /ext_card /sdcard /sdcard1 /tmp /usbdisk /vendor /mnt /sbin /lta-label
 }
 
 # process killer
