@@ -84,10 +84,9 @@ UNMOUNT () {
 	umount -l /dev/pts
 
 	# pertitions
-	umount -l /dev/block/platform/msm_sdcc.1/by-name/system
-	umount -l /dev/block/platform/msm_sdcc.1/by-name/userdata
-	umount -l /dev/block/platform/msm_sdcc.1/by-name/apps_log
-	umount -l /dev/block/platform/msm_sdcc.1/by-name/cache
+	umount -l /data
+	umount -l /system
+	umount -l /cache
 
 	# tmpfs
 	umount -l /mnt/secure
@@ -113,6 +112,11 @@ UNMOUNT () {
 
 	# write changes
 	sync
+}
+
+# remove 
+REMOVE () {
+	rm -r /init* /ueventd* /etc /d /ext_card /sdcard /sdcard1 /tmp /usbdisk /vendor /mnt
 }
 
 # process killer
@@ -155,18 +159,6 @@ KILLER () {
 	sync
 }
 
-# goodbye ric...
-BYERIC () {
-	local ric=$(type ric | sed "s/.* //g" )
-	if [ -x $ric ]; then
-		echo "#!/system/bin/sh" > $ric
-		echo "while :" >> $ric
-		echo "do" >> $ric
-		echo "  sleep 3600" >> $ric
-		echo "done" >> $ric
-	fi
-}
-
 # VIBRAT
 VIBRAT () {
 	local viberator="/sys/class/timed_output/vibrator/enable"
@@ -188,7 +180,6 @@ UNSET () {
 	unset VIBRAT
 	unset RECOVERY
 	unset KILLER
-	unset BYERIC
 }
 
 # recovery
@@ -197,10 +188,10 @@ RECOVERY () {
 	LED 0 128 0
 
 	# prepare hijack
-	BYERIC
 	KILLER
 	sleep 1
 	UNMOUNT
+	REMOVE
 	sleep 1
 
 	# unpack recovery ramdisk image
