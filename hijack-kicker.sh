@@ -83,6 +83,7 @@ PREPARE_HIJACK () {
     # copy ramdisk images
     ###
     cp /system/hijack/ramdisk-recovery.img /temp/ramdisk/
+    cp /system/hijack/ramdisk-recovery.cpio /temp/ramdisk/
 
     ###
     # kick hijack script
