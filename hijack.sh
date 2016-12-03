@@ -170,8 +170,8 @@ UNSET () {
 
 # recovery
 RECOVERY () {
-	# GREEN
-	LED 0 128 0
+	# AQUAMARINE
+	LED 127 255 212
 
 	# prepare hijack
 	KILLER
@@ -206,10 +206,8 @@ SWITCH () {
 	local suffix
 	local catproc
 
-	# AQUAMARINE
-	LED 127 255 212
-
-	# vibration
+	# vibration / light PURPLE
+	LED 150 50 255
 	VIBRAT
 
 	# get event
