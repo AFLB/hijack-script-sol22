@@ -73,44 +73,28 @@ KMSG () {
 
 # unmount
 UNMOUNT () {
-	# none
+	# partitions list from every rc files,
+	# fstab.qcom and result of mount command
 	umount -l /acct
-	umount -l /dev/cpuctl
-
-	# debugfs
-	umount -l /sys/kernel/debug
-
-	# devptfs
-	umount -l /dev/pts
-
-	# partitions
-	umount -l /data
-	umount -l /system
 	umount -l /cache
+	umount -l /data
+	umount -l /dev/cpuctl
+	umount -l /dev/pts
+	umount -l /dev
+	umount -l /dtvtmp/dtv
 	umount -l /lta-label
-
-	# tmpfs
-	umount -l /mnt/secure
 	umount -l /mnt/asec
+	umount -l /mnt/idd
 	umount -l /mnt/obb
 	umount -l /mnt/qcks
-	umount -l /dev/cpuctl
-	umount -l /dtvtmp/dtv
-	umount -l /mnt/idd
-	umount -l /mnt/qcks
-
-	# emulate
-	umount -l /storage/emulated/legacy
+	umount -l /mnt/secure
 	umount -l /mnt/shell/emulated
-
-	# external SD card
-	umount -l /storage/removable/sdcard1
-
-	# proc
 	umount -l /proc
-
-	# sysfs
+	umount -l /storage/emulated/legacy
+	umount -l /storage/removable/sdcard1
+	umount -l /sys/kernel/debug
 	umount -l /sys
+	umount -l /system
 
 	# write changes
 	sync
