@@ -1,0 +1,223 @@
+on post-fs-data
+    # Permissions for AKM8963 sensor
+    chown system system /data/misc/akm_set.txt
+
+    # 3LM settings
+    setprop ro.3lm.production 1
+    setprop ro.3LM.extended 1
+    setprop ro.camera.sound.forced 1
+    setprop ro.3LM.oem_manifest 1
+
+    # 3LM encryption
+    setprop ro.3lm.legacy_encryption 1
+    setprop ro.3LM.oem_sd_encryption 0
+
+    # Modify local IP range
+    write /proc/sys/net/ipv4/ip_local_port_range "49152 65535"
+
+# KDDI UIM
+service uimd /system/bin/uimd
+    class late_start
+    socket uimd stream 666 radio radio
+    user  radio
+    group radio
+
+# NFC/FeliCa
+service snfcboot /system/bin/snfcboot
+    class core
+    user  root
+    group root
+    oneshot
+
+service snfccc /system/bin/snfcccserver
+    class main
+    user  root
+    group root
+
+# IrDA
+service irda /system/bin/irdaserver
+    class main
+    user  system
+    group system
+
+# oneseg
+service servicemanager /system/bin/servicemanager
+    onrestart restart dtvserver
+    onrestart restart dtvsdserver
+
+service dtvserver /system/bin/dtvserver
+    class main
+
+service dtvsdserver /system/bin/dtvsdserver
+    class main
+
+# White Calibration
+service display_cc /system/bin/display_color_calib
+    class main
+    oneshot
+    disable
+
+on early-boot
+    # NFC/FeliCa
+    chown felica nfc /dev/ttyHSL3
+    chown felica nfc /dev/felica_pon
+    chown system nfc /dev/felica_cen
+    chown felica nfc /dev/felica_rfs
+    chown felica felica /dev/felica_rws
+    chown nfc nfc /dev/snfc_hsel
+    chown nfc nfc /dev/snfc_intu_poll
+    chown nfc nfc /dev/snfc_available_poll
+    chown nfc nfc /sys/devices/platform/semc_felica.0/snfc_ldo
+    chown system system /sys/devices/platform/semc_felica.0/ta_rwusb
+    chown system system /sys/devices/platform/semc_felica.0/st_usbcon
+    chown system system /sys/devices/platform/semc_felica.0/st_airplane
+    chmod 0660 /dev/ttyHSL3
+    chmod 0220 /dev/felica_pon
+    chmod 0664 /dev/felica_cen
+    chmod 0440 /dev/felica_rfs
+    chmod 0400 /dev/felica_rws
+    chmod 0200 /dev/snfc_hsel
+    chmod 0400 /dev/snfc_intu_poll
+    chmod 0600 /dev/snfc_available_poll
+    chmod 0200 /sys/devices/platform/semc_felica.0/snfc_ldo
+    chmod 0200 /sys/devices/platform/semc_felica.0/ta_rwusb
+    chmod 0200 /sys/devices/platform/semc_felica.0/st_usbcon
+    chmod 0200 /sys/devices/platform/semc_felica.0/st_airplane
+    symlink /sys/devices/platform/semc_felica.0/snfc_ldo /dev/snfc_ldo
+    symlink /dev/ttyHSL3 /dev/snfc_uart
+    symlink /dev/felica_cen /dev/snfc_cen
+    symlink /dev/felica_rfs /dev/snfc_rfs
+    symlink /dev/felica_pon /dev/snfc_pon
+    symlink /sys/devices/platform/semc_felica.0/st_airplane /dev/felica_st_airplane
+    symlink /sys/devices/platform/semc_felica.0/st_usbcon /dev/felica_st_usbcon
+    symlink /sys/devices/platform/semc_felica.0/ta_rwusb /dev/felica_ta_rwusb
+
+    # MTP Buffer (for Lismo port MTP)
+    mkdir /dev/kddi
+    mkdir /dev/kddi/mtp
+    mkdir /dev/kddi/mtp/buffer
+
+    # make VenderExtentionDesc (owner:sdcard_rw , permission:660)
+    write /dev/kddi/mtp/buffer/vedstring "kddi.com/LISMOMTP/97F0: 1.0;"
+    chmod 0660 /dev/kddi/mtp/buffer/vedstring
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/vedstring
+
+    # KDDI MTP e4-ef buffer
+    # make "e4" buffer, "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-e4
+    write /dev/kddi/mtp/buffer/opcode-e4/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-e4/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-e4/buffer
+
+    # make "e5" buffer, "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-e5
+    write /dev/kddi/mtp/buffer/opcode-e5/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-e5/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-e5/buffer
+
+    # make "e6" buffer,  "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-e6
+    write /dev/kddi/mtp/buffer/opcode-e6/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-e6/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-e6/buffer
+
+    # make "e7" buffer, "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-e7
+    write /dev/kddi/mtp/buffer/opcode-e7/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-e7/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-e7/buffer
+
+    # make "e8" buffer,  "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-e8
+    write /dev/kddi/mtp/buffer/opcode-e8/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-e8/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-e8/buffer
+
+    # make "e9" buffer, "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-e9
+    write /dev/kddi/mtp/buffer/opcode-e9/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-e9/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-e9/buffer
+
+    # make "ea" buffer, "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-ea
+    write /dev/kddi/mtp/buffer/opcode-ea/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-ea/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-ea/buffer
+
+    # make "eb" buffer,  "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-eb
+    write /dev/kddi/mtp/buffer/opcode-eb/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-eb/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-eb/buffer
+
+    # make "ec" buffer,  "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-ec
+    write /dev/kddi/mtp/buffer/opcode-ec/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-ec/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-ec/buffer
+
+    # make "ed" buffer, "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-ed
+    write /dev/kddi/mtp/buffer/opcode-ed/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-ed/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-ed/buffer
+
+    # make "ee" buffer, "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-ee
+    write /dev/kddi/mtp/buffer/opcode-ee/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-ee/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-ee/buffer
+
+    # make "ef" buffer, "buffer" (owner:sdcard_rw , permission:660)
+    mkdir /dev/kddi/mtp/buffer/opcode-ef
+    write /dev/kddi/mtp/buffer/opcode-ef/buffer 1
+    chmod 0660 /dev/kddi/mtp/buffer/opcode-ef/buffer
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/opcode-ef/buffer
+
+    # make data transport file (owner:sdcard_rw , permission:660)
+    write /dev/kddi/mtp/buffer/lismo_data_file ""
+    chmod 0660 /dev/kddi/mtp/buffer/lismo_data_file
+    chown sdcard_rw sdcard_rw /dev/kddi/mtp/buffer/lismo_data_file
+
+on boot
+    # ISDB-T
+    chown system system /dev/i2c-0
+    chmod 664 /dev/i2c-0
+    chown system system /dev/tsif0
+    chown system system /sys/devices/platform/msm_tsif.0/mode
+    chown system system /sys/devices/platform/oneseg_tunerpm.0/power_ctrl
+    # NFC/FeliCa
+    symlink /dev/felica_vdev /dev/felica
+    chown system system /sys/devices/platform/irda/irda
+    # IrDA
+    chmod 600 /sys/devices/platform/irda/irda
+    chmod 666 /dev/ttyHSL2
+
+    # Assigne 75% to Appliction buffer and 25% to TCP buffer to meet KDDP KPI
+    write /proc/sys/net/ipv4/tcp_adv_win_scale -2
+
+    # Define KDDI specific TCP buffer sizes for various network
+    # ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax
+    setprop net.tcp.buffersize.evdo  1400,261800,523600,1400,261800,261800
+    setprop net.tcp.buffersize.1xrtt 1400,261800,523600,1400,261800,261800
+    setprop net.tcp.buffersize.wifi  1400,261800,2097600,1400,261800,261800
+    setprop net.tcp.buffersize.ehrpd 4096,87380,1048800,4096,16384,129720
+    setprop net.tcp.buffersize.lte   4096,174760,3146400,4096,16384,196608
+
+    # Adjust following buffers to use KDDI tcp_adv_win_scale
+    setprop net.tcp.buffersize.default 4096,87380,220416,4096,16384,110208
+    setprop net.tcp.buffersize.umts    4094,87380,220416,4096,16384,110208
+    setprop net.tcp.buffersize.hspa    4094,87380,2441216,4096,16384,1220608
+    setprop net.tcp.buffersize.hsupa   4094,87380,2441216,4096,16384,1220608
+    setprop net.tcp.buffersize.hsdpa   4094,87380,2441216,4096,16384,1220608
+    setprop net.tcp.buffersize.hspap   4094,87380,2441216,4096,16384,1220608
+    setprop net.tcp.buffersize.edge    4093,26280,70080,4096,16384,35040
+    setprop net.tcp.buffersize.gprs    4092,8760,23360,4096,8760,11680
+    setprop net.tcp.buffersize.evdo    4094,87380,524288,4096,16384,262144
+
+on init
+    # oneseg
+    mkdir /dtvtmp 0700 root root
+    mkdir /dtvtmp/dtv 0700 root root
+    mount tmpfs tmpfs /dtvtmp/dtv nosuid nodev size=400K
