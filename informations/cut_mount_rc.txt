@@ -1,0 +1,19 @@
+mount none /mnt/shell/emulated/0 /storage/emulated/legacy bind
+mount cgroup none /acct cpuacct
+mount tmpfs tmpfs /mnt/secure mode=0700,uid=0,gid=0
+mount tmpfs tmpfs /mnt/asec mode=0755,gid=1000
+mount tmpfs tmpfs /mnt/obb mode=0755,gid=1000
+mount cgroup none /dev/cpuctl cpu
+mount yaffs2 mtd@system /system
+mount yaffs2 mtd@system /system ro remount
+mount yaffs2 mtd@userdata /data nosuid nodev
+mount yaffs2 mtd@cache /cache nosuid nodev
+mount rootfs rootfs / ro remount
+mount rootfs rootfs / shared rec
+mount tmpfs tmpfs /mnt/secure private rec
+mount tmpfs tmpfs /dtvtmp/dtv nosuid nodev size=400K
+mount debugfs /sys/kernel/debug /sys/kernel/debug
+mount_all fstab.qcom
+mount ext4 /dev/block/platform/msm_sdcc.1/by-name/LTALabel /lta-label nosuid nodev noatime noexec ro barrier=0
+mount tmpfs tmpfs /mnt/qcks mode=0770,uid=1000,gid=1000
+mount ext4 /dev/block/platform/msm_sdcc.1/by-name/system /system ro remount barrier=1
