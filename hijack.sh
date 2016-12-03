@@ -139,6 +139,43 @@ UNMOUNT () {
 	fi
 }
 
+# process killer
+KILLER () {
+	local svcname
+	local runningprc
+	local lockingpid
+	local binary
+
+	# kill services
+	for svcname in $(getprop | grep -E '^\[init\.svc\..*\]: \[running\]' | sed 's/\[init\.svc\.\(.*\)\]:.*/\1/g;')
+	do
+		stop $svcname
+		if [ -f "/system/bin/${svcname}" ]; then
+			pkill -f /system/bin/${svcname}
+		fi
+	done
+
+	# kill processes
+	for runningprc in $(ps | grep /system/bin | grep -v grep | grep -v chargemon | awk '{print $1}' ) 
+	do
+		kill -9 $runningprc
+	done
+	for runningprc in $(ps | grep /sbin | grep -v grep | awk '{print $1}' )
+	do
+		kill -9 $runningprc
+	done
+
+	# kill locking pidfile
+	for lockingpid in `lsof | awk '{print $1" "$2}' | grep "/bin\|/system\|/data\|/cache" | awk '{print $1}'`; do
+		binary=$(cat /proc/${lockingpid}/status | grep -i "name" | awk -F':\t' '{print $2}')
+		if [ "$binary" != "" ]; then
+			killall $binary
+		fi
+	done
+
+	sync
+}
+
 # VIBRAT
 VIBRAT () {
 	local viberator="/sys/class/timed_output/vibrator/enable"
@@ -160,6 +197,7 @@ UNSET () {
 	unset SWITCH
 	unset VIBRAT
 	unset RECOVERY
+	unset KILLER
 }
 
 # recovery
@@ -167,7 +205,13 @@ RECOVERY () {
 	# GREEN
 	LED 0 128 0
 
+	# prepare hijack
+	KILLER
+	sleep 1
 	UNMOUNT
+	sleep 1
+
+	# unpack recovery ramdisk image
 	mkdir /recovery
 	cd /recovery
 
