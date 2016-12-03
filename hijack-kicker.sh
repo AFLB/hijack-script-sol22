@@ -48,4 +48,42 @@
 #
 ###
 
-source /system/hijack/hijack.sh
+PREPARE () {
+    ###
+    # prepare
+    ###
+    mount -o remount,rw rootfs /
+    mkdir -p /temp
+    mkdir -p /temp/bin
+    mkdir -p /temp/script
+
+    ###
+    # copy busybox
+    ###
+    # why? - to use high-functioning busybox
+    # on stock ramdisk, has minimal busybox...
+    ###
+    cp /system/hijack/busybox /temp/bin/
+    [ $? -ne 0 ] && return 1
+    chmod 755 /temp/bin/busybox
+    local cmd
+    for cmd in `/temp/bin/busybox --list`
+    do
+        ln -s /temp/bin/busybox /temp/bin/$cmd
+    done
+
+    ###
+    # copy scripts
+    ###
+    cp /system/hijack/hijack.sh /temp/script/
+    chmod 755 /temp/script/*.sh
+
+    ###
+    # kick hijack script
+    ###
+    exec /temp/bin/sh -c /temp/script/hijack.sh
+}
+
+PREPARE_HIJACK
+[ $? -ne 0 ] && echo "[hijack] busybox not found." > /dev/kmsg
+unset PREPARE_HIJACK

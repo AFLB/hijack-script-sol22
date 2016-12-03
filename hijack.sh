@@ -1,3 +1,8 @@
+#!/temp/bin/sh
+
+# add /temp/bin to path
+PATH="/temp/bin:$PATH"
+
 ###
 #
 # PART OF HIJACK RAMDISK
@@ -52,8 +57,6 @@ LED () {
 # prepare, remount / and create folders
 PREPARE () {
 	mount -o remount,rw rootfs /
-	mkdir -p /temp/
-	mkdir -p /temp/bin/
 	mkdir -p /temp/event/
 }
 
@@ -113,6 +116,7 @@ UNMOUNT () {
 
 	# write changes
 	sync
+	sleep 3
 
 	# WRITE LOGS (testing)
 	mount > /system/hijack/logs/unmount_log/unmount_mount.txt
