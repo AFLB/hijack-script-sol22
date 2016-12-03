@@ -164,12 +164,16 @@ UNSET () {
 	unset UNMOUNT
 	unset SWITCH
 	unset VIBRAT
-	unset RECOVERY
+	unset HIJACK
 	unset KILLER
 }
 
-# recovery
-RECOVERY () {
+# hijack
+HIJACK () {
+	if [ "$1" = "" ]; then
+		exit 1
+	fi
+
 	# AQUAMARINE
 	LED 127 255 212
 
@@ -180,13 +184,12 @@ RECOVERY () {
 	REMOVE
 	sleep 1
 
-	# unpack recovery ramdisk image
-	mkdir /recovery
-	cd /recovery
-	if [ -f /temp/ramdisk/ramdisk-recovery.img ]; then
-		gzip -dc /temp/ramdisk/ramdisk-recovery.img | cpio -i
-	elif [ -f /temp/ramdisk/ramdisk-recovery.cpio ]; then
-		cpio -idu < /temp/ramdisk/ramdisk-recovery.cpio
+	# unpack ramdisk image
+	cd /
+	if [ -f /temp/ramdisk/ramdisk-$1.img ]; then
+		gzip -dc /temp/ramdisk/ramdisk-$1.img | cpio -i
+	elif [ -f /temp/ramdisk/ramdisk-$1.cpio ]; then
+		cpio -idu < /temp/ramdisk/ramdisk-$1.cpio
 	fi
 
 	# write changes
@@ -196,7 +199,7 @@ RECOVERY () {
 	LED
 
 	# hijack!
-	chroot /recovery /init
+	chroot / /init
 }
 
 # get switch
@@ -235,7 +238,10 @@ SWITCH () {
 	# VOL +
 	if [ -s /temp/event/keycheck_up ]; then
 		KMSG "[hijack] hijack to recovery..."
-		RECOVERY
+		HIJACK recovery
+	elif [ -s /temp/event/keycheck_down ]; then
+		KMSG "[hijack] hijack to system..."
+		HIJACK system
 	fi
 }
 

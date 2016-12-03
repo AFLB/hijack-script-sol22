@@ -84,6 +84,8 @@ PREPARE_HIJACK () {
     ###
     cp /system/hijack/ramdisk-recovery.img /temp/ramdisk/
     cp /system/hijack/ramdisk-recovery.cpio /temp/ramdisk/
+    cp /system/hijack/ramdisk-system.img /temp/ramdisk/
+    cp /system/hijack/ramdisk-system.cpio /temp/ramdisk/
 
     ###
     # kick hijack script
